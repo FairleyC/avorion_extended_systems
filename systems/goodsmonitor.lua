@@ -66,32 +66,39 @@ end
 function gatherData()
 
     local buyable = {}
-    local scripts = {"consumer.lua", "factory.lua", "tradingpost.lua"}
+    local player = Player();
 
-    for _, station in pairs({Sector():getEntitiesByType(EntityType.Station)}) do
-        for _, script in pairs(scripts) do
+    if player:hasScript("../systems/tradeoverview.lua") then
 
-            local results = {station:invokeFunction(script, "getSoldGoods")}
-            local callResult = results[1]
+		local scripts = {"consumer.lua", "factory.lua", "tradingpost.lua"}
 
-            if callResult == 0 then -- call was successful, the station sells goods
+		for _, station in pairs({Sector():getEntitiesByType(EntityType.Station)}) do
+		    for _, script in pairs(scripts) do
 
-                for i = 2, #results do
-                    local name = results[i];
+		        local results = {station:invokeFunction(script, "getSoldGoods")}
+		        local callResult = results[1]
 
-                    local callOk, good = station:invokeFunction(script, "getGoodByName", name)
-                    if callOk ~= 0 then print("getGoodByName failed: " .. callOk) end
+		        if callResult == 0 then -- call was successful, the station sells goods
 
-                    local callOk, stock, maxStock = station:invokeFunction(script, "getStock", name)
-                    if callOk ~= 0 then print("getStock failed" .. callOk) end
+		            for i = 2, #results do
+		                local name = results[i];
 
-                    local callOk, price = station:invokeFunction(script, "getSellPrice", name, Faction().index)
-                    if callOk ~= 0 then print("getSellPrice failed" .. callOk) end
+		                local callOk, good = station:invokeFunction(script, "getGoodByName", name)
+		                if callOk ~= 0 then print("getGoodByName failed: " .. callOk) end
 
-                    table.insert(buyable, {good = good, price = price, stock = stock, maxStock = maxStock, station = station.title, titleArgs = station:getTitleArguments(), stationIndex = station.index, coords = vec2(Sector():getCoordinates())})
-                end
-            end
-        end
+		                local callOk, stock, maxStock = station:invokeFunction(script, "getStock", name)
+		                if callOk ~= 0 then print("getStock failed" .. callOk) end
+
+		                local callOk, price = station:invokeFunction(script, "getSellPrice", name, Faction().index)
+		                if callOk ~= 0 then print("getSellPrice failed" .. callOk) end
+
+		                table.insert(buyable, {good = good, price = price, stock = stock, maxStock = maxStock, station = station.title, titleArgs = station:getTitleArguments(), stationIndex = station.index, coords = vec2(Sector():getCoordinates())})
+		            end
+		        end
+		    end
+		else
+				print(player:name .. " doesn't have a trade module.")
+		end    
     end
 
     return buyable

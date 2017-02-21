@@ -33,6 +33,8 @@ UpgradeGenerator.add("data/scripts/systems/tradingoverview.lua", 1)
 UpgradeGenerator.add("data/scripts/systems/velocitybypass.lua", 1)
 UpgradeGenerator.add("data/scripts/systems/energytoshieldconverter.lua", 1)
 UpgradeGenerator.add("data/scripts/systems/valuablesdetector.lua", 1)
+-- Added for speed.
+UpgradeGenerator.add("data/scripts/systems/goodsmonitor.lua",1)
 
 function UpgradeGenerator.initialize(seed)
     if seed then
